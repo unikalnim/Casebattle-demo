@@ -59,6 +59,57 @@
       transform: translateY(-2px);
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));
     }
+    .user-info {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  color: white;
+}
+
+.user-info img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #f07a3f;
+  object-fit: cover;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.1;
+  font-size: 12px; /* было 15px */
+  font-weight: 400; /* обычная толщина */
+}
+
+.hello-text {
+  color: #f07a3f;
+  font-weight: 500; /* было 600 */
+  font-size: 12px;
+}
+
+.nickname {
+  color: #ffffff;
+  font-size: 13px; /* было 17px */
+  font-weight: 500; /* было 600 */
+}
+
+.balance-text {
+  color: #ffffff;
+  font-size: 11px; /* было 14px */
+  font-weight: 400;
+}
+
+.balance-amount {
+  color: #f07a3f;
+  font-weight: 500; /* было 600 */
+  font-size: 12px;
+}
+
+
+
 
     .auth-btn, .user-info {
       margin-left: auto;
@@ -71,7 +122,7 @@
 
     .auth-btn {
       background-color: #f07a3f;
-      color: white;
+      color: rgb(255, 255, 255);
       border: none;
       transition: background 0.3s;
     }
@@ -89,7 +140,7 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 2px solid #f07a3f;
+      border: 1px solid #f07a3f;
       object-fit: cover;
     }
 
@@ -124,18 +175,26 @@
     </a>
     
     <button class="auth-btn" id="loginBtn">Войти с Google</button>
-    <div class="user-info" id="userInfo">
-      <img id="userPhoto" src="" alt="Профиль">
-      <span id="usernameDisplay"></span> — $<span id="balanceDisplay">0.00</span>
-    </div>
+<div class="user-info" id="userInfo">
+  <a href="profile.html"><img id="userPhoto" src="" alt="Профиль"></a>
+  <div class="user-text">
+    <span class="hello-text">Привет,</span>
+    <span id="usernameDisplay" class="nickname"></span>
+    <span class="balance-text">
+      на счете <span id="balanceDisplay" class="balance-amount">0.00 ₽</span> 
+    </span>
+  </div>
+</div>
+
+</div>
+
+
   </div>
 
   <main>
     <h1>Добро пожаловать в Case Battle 🎮</h1>
     <p>Войдите через Google, чтобы увидеть своё имя и фото профиля.</p>
   </main>
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
@@ -188,5 +247,3 @@
   </script>
 </body>
 </html>
-
-
