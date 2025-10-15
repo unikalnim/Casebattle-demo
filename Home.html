@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Case Battle — Главная</title>
+  <style>
+    :root { --sidebar-width: 182px; }
+
+    body {
+      margin: 0;
+      color: #fff;
+      background: #1b1f27;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      position: fixed;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: #13171f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    header img.logo {
+      height: 62px;
+      margin-top: 2px;
+    }
+
+    .topbar {
+      position: relative;
+      background: #13171f;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 25px;
+      gap: 50px;
+      margin-left: var(--sidebar-width);
+    }
+
+    .topbar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: #ffffff;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .topbar-item img { width: 30px; height: 30px; }
+    .topbar-item span { font-size: 11px; margin-top: 5px; }
+
+    .topbar-item:hover {
+      transform: translateY(-2px);
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));
+    }
+
+    .auth-btn, .user-info {
+      margin-left: auto;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .auth-btn {
+      background-color: #f07a3f;
+      color: white;
+      border: none;
+      transition: background 0.3s;
+    }
+    .auth-btn:hover { background-color: #ff8b55; }
+
+    .user-info {
+      background: none;
+      color: #f07a3f;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #f07a3f;
+      object-fit: cover;
+    }
+
+    main {
+      margin-left: calc(var(--sidebar-width));
+      padding: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="Screenshot (5).png" alt="logo" class="logo">
+  </header>
+
+  <div class="topbar">
+    <a href="#" class="topbar-item">
+      <img src="upgrade-icon.svg" alt="">
+      <span>АПГРЕЙД</span>
+    </a>
+    <a href="#" class="topbar-item">
+      <img src="contract-icon.svg" alt="">
+      <span>КОНТРАКТ</span>
+    </a>
+    <a href="#" class="topbar-item">
+      <img src="giveaway-icon.svg" alt="">
+      <span>РОЗЫГРЫШ</span>
+    </a>
+    <a href="#" class="topbar-item">
+      <img src="medal.svg" alt="">
+      <span>ТУРНИР</span>
+    </a>
+    
+    <button class="auth-btn" id="loginBtn">Войти с Google</button>
+    <div class="user-info" id="userInfo">
+      <img id="userPhoto" src="" alt="Профиль">
+      <span id="usernameDisplay"></span> — $<span id="balanceDisplay">0.00</span>
+    </div>
+  </div>
+
+  <main>
+    <h1>Добро пожаловать в Case Battle 🎮</h1>
+    <p>Войдите через Google, чтобы увидеть своё имя и фото профиля.</p>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDn_hZA2IuN9pKDSLnFcdTXfreRBrtfQ2M",
+      authDomain: "case-battle-af897.firebaseapp.com",
+      projectId: "case-battle-af897",
+      storageBucket: "case-battle-af897.firebasestorage.app",
+      messagingSenderId: "485044842847",
+      appId: "1:485044842847:web:869c6e455b9d781ab9c6ea",
+      measurementId: "G-N3P3CK60GB"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    // Вход через Google
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      try {
+        await auth.signInWithPopup(provider);
+      } catch (error) {
+        alert("Ошибка входа: " + error.message);
+      }
+    });
+
+    // Отслеживание состояния пользователя
+    auth.onAuthStateChanged(user => {
+      const loginBtn = document.getElementById("loginBtn");
+      const userInfo = document.getElementById("userInfo");
+      const usernameDisplay = document.getElementById("usernameDisplay");
+      const userPhoto = document.getElementById("userPhoto");
+
+      if (user) {
+        loginBtn.style.display = "none";
+        userInfo.style.display = "flex";
+
+        usernameDisplay.textContent = user.displayName || "Пользователь";
+        if (user.photoURL) {
+          userPhoto.src = user.photoURL;
+        } else {
+          userPhoto.src = "default-avatar.png"; // запасной вариант
+        }
+      } else {
+        loginBtn.style.display = "block";
+        userInfo.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
