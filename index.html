@@ -59,57 +59,55 @@
       transform: translateY(-2px);
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));
     }
+
     .user-info {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  background: none;
-  color: white;
-}
+      display: none;
+      align-items: center;
+      gap: 12px;
+      background: none;
+      color: white;
+    }
 
-.user-info img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 2px solid #f07a3f;
-  object-fit: cover;
-}
+    .user-info img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #f07a3f;
+      object-fit: cover;
+    }
 
-.user-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  line-height: 1.1;
-  font-size: 12px; /* было 15px */
-  font-weight: 400; /* обычная толщина */
-}
+    .user-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      line-height: 1.1;
+      font-size: 12px;
+      font-weight: 400;
+    }
 
-.hello-text {
-  color: #f07a3f;
-  font-weight: 500; /* было 600 */
-  font-size: 12px;
-}
+    .hello-text {
+      color: #f07a3f;
+      font-weight: 500;
+      font-size: 12px;
+    }
 
-.nickname {
-  color: #ffffff;
-  font-size: 13px; /* было 17px */
-  font-weight: 500; /* было 600 */
-}
+    .nickname {
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
-.balance-text {
-  color: #ffffff;
-  font-size: 11px; /* было 14px */
-  font-weight: 400;
-}
+    .balance-text {
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 400;
+    }
 
-.balance-amount {
-  color: #f07a3f;
-  font-weight: 500; /* было 600 */
-  font-size: 12px;
-}
-
-
-
+    .balance-amount {
+      color: #f07a3f;
+      font-weight: 500;
+      font-size: 12px;
+    }
 
     .auth-btn, .user-info {
       margin-left: auto;
@@ -122,31 +120,46 @@
 
     .auth-btn {
       background-color: #f07a3f;
-      color: rgb(255, 255, 255);
+      color: #fff;
       border: none;
       transition: background 0.3s;
     }
     .auth-btn:hover { background-color: #ff8b55; }
 
-    .user-info {
-      background: none;
-      color: #f07a3f;
-      display: none;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-info img {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: 1px solid #f07a3f;
-      object-fit: cover;
-    }
-
     main {
       margin-left: calc(var(--sidebar-width));
       padding: 30px;
+    }
+
+    .admin-panel {
+      margin-top: 20px;
+      background: #232837;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .admin-panel input {
+      background: #1b1f27;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 8px;
+      border-radius: 6px;
+      margin-right: 10px;
+      width: 200px;
+    }
+
+    .admin-panel button {
+      background: #f07a3f;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .admin-panel button:hover {
+      background: #ff8b55;
     }
   </style>
 </head>
@@ -175,28 +188,36 @@
     </a>
     
     <button class="auth-btn" id="loginBtn">Войти с Google</button>
-<div class="user-info" id="userInfo">
-  <a href="profile.html"><img id="userPhoto" src="" alt="Профиль"></a>
-  <div class="user-text">
-    <span class="hello-text">Привет,</span>
-    <span id="usernameDisplay" class="nickname"></span>
-    <span class="balance-text">
-      на счете <span id="balanceDisplay" class="balance-amount">0.00 ₽</span> 
-    </span>
-  </div>
-</div>
 
-</div>
-
-
+    <div class="user-info" id="userInfo">
+      <a href="profile.html"><img id="userPhoto" src="" alt="Профиль"></a>
+      <div class="user-text">
+        <span class="hello-text">Привет,</span>
+        <span id="usernameDisplay" class="nickname"></span>
+        <span class="balance-text">
+          на счете <span id="balanceDisplay" class="balance-amount">0.00 ₽</span> 
+        </span>
+      </div>
+    </div>
   </div>
 
   <main>
     <h1>Добро пожаловать в Case Battle 🎮</h1>
-    <p>Войдите через Google, чтобы увидеть своё имя и фото профиля.</p>
+    <p>Войдите через Google, чтобы увидеть своё имя, фото и баланс.</p>
+
+    <!-- Панель администратора -->
+    <div class="admin-panel" id="adminPanel">
+      <h3>Админ-панель 💰</h3>
+      <input type="text" id="targetUid" placeholder="UID пользователя">
+      <input type="number" id="amountInput" placeholder="Сумма ₽">
+      <button onclick="addBalance()">Выдать баланс</button>
+    </div>
   </main>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -211,7 +232,11 @@
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
     const provider = new firebase.auth.GoogleAuthProvider();
+
+    // UID администраторов (замени на свой!)
+    const adminUIDs = ['IEJvXT2H3OcRF3rof9uxaUfCaB62'];
 
     // Вход через Google
     document.getElementById("loginBtn").addEventListener("click", async () => {
@@ -223,27 +248,75 @@
     });
 
     // Отслеживание состояния пользователя
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged(async (user) => {
       const loginBtn = document.getElementById("loginBtn");
       const userInfo = document.getElementById("userInfo");
       const usernameDisplay = document.getElementById("usernameDisplay");
       const userPhoto = document.getElementById("userPhoto");
+      const adminPanel = document.getElementById("adminPanel");
 
       if (user) {
         loginBtn.style.display = "none";
         userInfo.style.display = "flex";
 
         usernameDisplay.textContent = user.displayName || "Пользователь";
-        if (user.photoURL) {
-          userPhoto.src = user.photoURL;
+        userPhoto.src = user.photoURL || "default-avatar.png";
+
+        // Показываем панель, если админ
+        if (adminUIDs.includes(user.uid)) {
+          adminPanel.style.display = "block";
+        }
+
+        const userRef = db.collection("users").doc(user.uid);
+        const docSnap = await userRef.get();
+
+        if (!docSnap.exists) {
+          await userRef.set({
+            name: user.displayName || "Пользователь",
+            balance: 0
+          });
+          document.getElementById("balanceDisplay").textContent = "0.00 ₽";
         } else {
-          userPhoto.src = "default-avatar.png"; // запасной вариант
+          const data = docSnap.data();
+          document.getElementById("balanceDisplay").textContent = `${(data.balance || 0).toFixed(2)} ₽`;
         }
       } else {
         loginBtn.style.display = "block";
         userInfo.style.display = "none";
+        adminPanel.style.display = "none";
       }
     });
+
+    // Функция выдачи баланса
+    // 🔹 Выдача баланса по UID
+async function addBalance() {
+  const admin = firebase.auth().currentUser;
+  if (!admin) return alert("Вы не вошли!");
+  if (!adminUIDs.includes(admin.uid)) return alert("У вас нет прав администратора!");
+
+  const targetUid = document.getElementById("targetUid").value.trim(); // UID кого пополнить
+  const amount = parseFloat(document.getElementById("amountInput").value); // сумма
+
+  if (!targetUid) return alert("Введите UID пользователя!");
+  if (isNaN(amount) || amount <= 0) return alert("Введите корректную сумму!");
+
+  // Получаем документ другого пользователя
+  const userRef = db.collection("users").doc(targetUid);
+  const docSnap = await userRef.get();
+
+  if (!docSnap.exists) {
+    alert("Пользователь с таким UID не найден!");
+    return;
+  }
+
+  const currentBalance = docSnap.data().balance || 0;
+  const newBalance = currentBalance + amount;
+
+  await userRef.update({ balance: newBalance });
+
+  alert(`✅ Пользователю (${targetUid}) выдано ${amount.toFixed(2)} ₽`);
+}
+
   </script>
 </body>
 </html>
