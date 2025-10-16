@@ -107,7 +107,6 @@
       color: #ffffff;
       font-size: 11px;
       font-weight: 400;
-      
     }
 
     .balance-amount {
@@ -148,20 +147,13 @@
 
     .profile-box {
       width: 350px;
-      height: 280px;
       background: rgba(0,0,0,0.4);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      margin-top: -280px;
       border-radius: 10px;
       overflow: hidden;
-    }
-
-    .profile-box:hover {
-      transform:none;
-      box-shadow:none;
+      padding-bottom: 20px;
     }
 
     .profile-avatar {
@@ -189,7 +181,6 @@
       margin-top: -25px;
     }
 
-    /* Новые стили */
     .profile-header {
       width: 100%;
       display: flex;
@@ -213,26 +204,29 @@
       transition: 0.2s;
     }
 
-    .profile-settings:hover {
-      transform: rotate(30deg);
-    }
+    .profile-settings:hover { transform: rotate(30deg); }
 
     .replenish-btn {
       margin-top: 15px;
-      background-color: #f07a3f;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
+      background-color: #522b17;
+      color: #ffffff;
       padding: 8px 20px;
       cursor: pointer;
       font-weight: 500;
       font-size: 14px;
-      transition: background 0.3s;
+      border:solid;
+      border-color: #ff732e;
     }
 
-    .replenish-btn:hover {
-      background-color: #ff8b55;
+    .replenish-btn:hover { background-color: #ff7300; }
+
+    .promo-message {
+      font-size: 12px;
+      margin-top: 5px;
+      height: 16px;
+      color: #f07a3f;
     }
+
     .balimgg{
       height: 35px;
       margin-right: 300px;
@@ -246,26 +240,11 @@
   </header>
 
   <div class="topbar">
-    <a href="#" class="topbar-item">
-      <img src="upgrade-icon.svg" alt="">
-      <span>АПГРЕЙД</span>
-    </a>
-    <a href="#" class="topbar-item">
-      <img src="contract-icon.svg" alt="">
-      <span>КОНТРАКТ</span>
-    </a>
-    <a href="#" class="topbar-item">
-      <img src="giveaway-icon.svg" alt="">
-      <span>РОЗЫГРЫШ</span>
-    </a>
-    <a href="#" class="topbar-item">
-      <img src="medal.svg" alt="">
-      <span>ТУРНИР</span>
-    </a>
-    <a href="admin.html" class="topbar-item">
-      <img src="ico-profile-success.png" alt="">
-      <span>ADMIN</span>
-    </a>
+    <a href="#" class="topbar-item"><img src="upgrade-icon.svg" alt=""><span>АПГРЕЙД</span></a>
+    <a href="#" class="topbar-item"><img src="contract-icon.svg" alt=""><span>КОНТРАКТ</span></a>
+    <a href="#" class="topbar-item"><img src="giveaway-icon.svg" alt=""><span>РОЗЫГРЫШ</span></a>
+    <a href="#" class="topbar-item"><img src="medal.svg" alt=""><span>ТУРНИР</span></a>
+    <a href="admin.html" class="topbar-item"><img src="ico-profile-success.png" alt=""><span>ADMIN</span></a>
     
     <button class="auth-btn" id="loginBtn">Войти с Google</button>
 
@@ -274,9 +253,7 @@
       <div class="user-text">
         <span class="hello-text">Привет,</span>
         <span id="usernameDisplay" class="nickname"></span>
-        <span class="balance-text">
-          на счете <span id="balanceDisplay" class="balance-amount">0.00 ₽</span> 
-        </span>
+        <span class="balance-text">на счете <span id="balanceDisplay" class="balance-amount">0.00 ₽</span></span>
       </div>
     </div>
   </div>
@@ -293,9 +270,13 @@
 
         <img id="profilePhoto" src="default-avatar.png" alt="Аватар" class="profile-avatar">
         <p id="profileName" class="profile-name">Имя пользователя</p>
-        <img id="balimg" src="wallet.png"alt="" class="balimgg">
+        <img id="balimg" src="wallet.png" alt="" class="balimgg">
         <p class="profile-balance"><span id="balanceDisplayBox">0.00 ₽</span></p>
 
+        <!-- Кнопка и ввод промокода -->
+        <input type="text" id="promoInput" placeholder="Введите промокод" style="margin-top:15px; padding:6px 10px;background-color: #13171f;color: white; text-align:center; outline:none; width:180px;">
+        <button class="replenish-btn" id="applyPromoBtn">Получить</button>
+        <p class="promo-message" id="promoMessage"></p>
       </div>
     </div>
   </main>
@@ -321,16 +302,11 @@
     const db = firebase.firestore();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    // Вход через Google
     document.getElementById("loginBtn").addEventListener("click", async () => {
-      try {
-        await auth.signInWithPopup(provider);
-      } catch (error) {
-        alert("Ошибка входа: " + error.message);
-      }
+      try { await auth.signInWithPopup(provider); }
+      catch (error) { alert("Ошибка входа: " + error.message); }
     });
 
-    // Отслеживание состояния пользователя
     auth.onAuthStateChanged(async (user) => {
       const loginBtn = document.getElementById("loginBtn");
       const userInfo = document.getElementById("userInfo");
@@ -356,10 +332,7 @@
         const docSnap = await userRef.get();
 
         if (!docSnap.exists) {
-          await userRef.set({
-            name: user.displayName || "Пользователь",
-            balance: 0
-          });
+          await userRef.set({ name: user.displayName || "Пользователь", balance: 0 });
           balanceDisplay.textContent = "0.00 ₽";
           balanceDisplayBox.textContent = "0.00 ₽";
         } else {
@@ -371,6 +344,42 @@
       } else {
         loginBtn.style.display = "block";
         userInfo.style.display = "none";
+      }
+    });
+
+    // === ПРОМОКОД ===
+    document.getElementById("applyPromoBtn").addEventListener("click", async () => {
+      const user = auth.currentUser;
+      const promoCode = document.getElementById("promoInput").value.trim().toUpperCase();
+      const msg = document.getElementById("promoMessage");
+
+      if (!user) return msg.textContent = "Войдите в аккаунт!";
+      if (!promoCode) return msg.textContent = "Введите промокод!";
+
+      try {
+        const promoRef = db.collection("promocodes").doc(promoCode);
+        const promoSnap = await promoRef.get();
+
+        if (!promoSnap.exists) {
+          msg.textContent = "Неверный промокод!";
+          return;
+        }
+
+        const promoData = promoSnap.data();
+        const value = promoData.value || 0;
+
+        const userRef = db.collection("users").doc(user.uid);
+        const userSnap = await userRef.get();
+        let balance = userSnap.data().balance || 0;
+
+        balance += value;
+        await userRef.update({ balance });
+
+        document.getElementById("balanceDisplay").textContent = balance.toFixed(2) + " ₽";
+        document.getElementById("balanceDisplayBox").textContent = balance.toFixed(2) + " ₽";
+        msg.textContent = `+${value} ₽ зачислено!`;
+      } catch (err) {
+        msg.textContent = "Ошибка: " + err.message;
       }
     });
   </script>
