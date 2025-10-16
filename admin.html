@@ -10,14 +10,8 @@
     body {
       margin: 0;
       color: #fff;
-      background-image:url(bg_case.webp);
-      background-size: 1300px 300px;
-      background-color: #171c25;
-      background-repeat: no-repeat;
+      background: #1b1f27;
       font-family: Arial, sans-serif;
-      background-position: center;
-      background-position-x: 460px;
-      background-position-y: 80px;
     }
 
     header {
@@ -107,7 +101,6 @@
       color: #ffffff;
       font-size: 11px;
       font-weight: 400;
-      
     }
 
     .balance-amount {
@@ -134,108 +127,39 @@
     .auth-btn:hover { background-color: #ff8b55; }
 
     main {
-      padding: 50px;
-      margin-left: 190px;
-      margin-top: 37px;
+      margin-left: calc(var(--sidebar-width));
+      padding: 30px;
     }
 
-    .profile-center {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 60vh;
-    }
-
-    .profile-box {
-      width: 350px;
-      height: 280px;
-      background: rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      margin-top: -280px;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .profile-box:hover {
-      transform:none;
-      box-shadow:none;
-    }
-
-    .profile-avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid #f07a3f;
-      object-fit: cover;
+    .admin-panel {
       margin-top: 20px;
-      margin-bottom: 10px;
+      background: #232837;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
     }
 
-    .profile-name {
+    .admin-panel input {
+      background: #1b1f27;
+      border: 1px solid #444;
       color: #fff;
-      font-size: 16px;
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
-
-    .profile-balance {
-      color: #ffffff;
-      font-size: 17px;
-      font-weight: 700;
-      margin-left: -200px;
-      margin-top: -25px;
-    }
-
-    /* Новые стили */
-    .profile-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 14px;
-      box-sizing: border-box;
-      background: rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .profile-username-top {
-      font-weight: 500;
-      font-size: 14px;
-      color: #f07a3f;
-    }
-
-    .profile-settings {
-      font-size: 18px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .profile-settings:hover {
-      transform: rotate(30deg);
-    }
-
-    .replenish-btn {
-      margin-top: 15px;
-      background-color: #f07a3f;
-      color: #fff;
-      border: none;
+      padding: 8px;
       border-radius: 6px;
-      padding: 8px 20px;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 14px;
-      transition: background 0.3s;
+      margin-right: 10px;
+      width: 200px;
     }
 
-    .replenish-btn:hover {
-      background-color: #ff8b55;
+    .admin-panel button {
+      background: #f07a3f;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
     }
-    .balimgg{
-      height: 35px;
-      margin-right: 300px;
+    .admin-panel button:hover {
+      background: #ff8b55;
     }
   </style>
 </head>
@@ -282,21 +206,15 @@
   </div>
 
   <main>
-    <h1 style="text-align:center; font-weight:300; font-size: 24px;">ПРОФИЛЬ</h1>
+    <h1>Добро пожаловать в Admin panel 🎮</h1>
+    <p>Напишите UID любого игрока и выдайте ему сумму которую хотите.</p>
 
-    <div class="profile-center">
-      <div class="profile-box">
-        <div class="profile-header">
-          <span id="profileUsernameTop" class="profile-username-top">Arlert</span>
-          <div class="profile-settings">⚙️</div>
-        </div>
-
-        <img id="profilePhoto" src="default-avatar.png" alt="Аватар" class="profile-avatar">
-        <p id="profileName" class="profile-name">Имя пользователя</p>
-        <img id="balimg" src="wallet.png"alt="" class="balimgg">
-        <p class="profile-balance"><span id="balanceDisplayBox">0.00 ₽</span></p>
-
-      </div>
+    <!-- Панель администратора -->
+    <div class="admin-panel" id="adminPanel">
+      <h3>Админ-панель 💰</h3>
+      <input type="text" id="targetUid" placeholder="UID пользователя">
+      <input type="number" id="amountInput" placeholder="Сумма ₽">
+      <button onclick="addBalance()">Выдать баланс</button>
     </div>
   </main>
 
@@ -321,6 +239,9 @@
     const db = firebase.firestore();
     const provider = new firebase.auth.GoogleAuthProvider();
 
+    // UID администраторов (замени на свой!)
+    const adminUIDs = ['IEJvXT2H3OcRF3rof9uxaUfCaB62'];
+
     // Вход через Google
     document.getElementById("loginBtn").addEventListener("click", async () => {
       try {
@@ -336,11 +257,7 @@
       const userInfo = document.getElementById("userInfo");
       const usernameDisplay = document.getElementById("usernameDisplay");
       const userPhoto = document.getElementById("userPhoto");
-      const profileName = document.getElementById("profileName");
-      const profilePhoto = document.getElementById("profilePhoto");
-      const balanceDisplay = document.getElementById("balanceDisplay");
-      const balanceDisplayBox = document.getElementById("balanceDisplayBox");
-      const profileUsernameTop = document.getElementById("profileUsernameTop");
+      const adminPanel = document.getElementById("adminPanel");
 
       if (user) {
         loginBtn.style.display = "none";
@@ -348,9 +265,11 @@
 
         usernameDisplay.textContent = user.displayName || "Пользователь";
         userPhoto.src = user.photoURL || "default-avatar.png";
-        profileName.textContent = user.displayName || "Пользователь";
-        profilePhoto.src = user.photoURL || "default-avatar.png";
-        profileUsernameTop.textContent = user.displayName || "Пользователь";
+
+        // Показываем панель, если админ
+        if (adminUIDs.includes(user.uid)) {
+          adminPanel.style.display = "block";
+        }
 
         const userRef = db.collection("users").doc(user.uid);
         const docSnap = await userRef.get();
@@ -360,19 +279,48 @@
             name: user.displayName || "Пользователь",
             balance: 0
           });
-          balanceDisplay.textContent = "0.00 ₽";
-          balanceDisplayBox.textContent = "0.00 ₽";
+          document.getElementById("balanceDisplay").textContent = "0.00 ₽";
         } else {
           const data = docSnap.data();
-          const bal = data.balance?.toFixed(2) || "0.00";
-          balanceDisplay.textContent = `${bal} ₽`;
-          balanceDisplayBox.textContent = `${bal} ₽`;
+          document.getElementById("balanceDisplay").textContent = `${(data.balance || 0).toFixed(2)} ₽`;
         }
       } else {
         loginBtn.style.display = "block";
         userInfo.style.display = "none";
+        adminPanel.style.display = "none";
       }
     });
+
+    // Функция выдачи баланса
+    // 🔹 Выдача баланса по UID
+async function addBalance() {
+  const admin = firebase.auth().currentUser;
+  if (!admin) return alert("Вы не вошли!");
+  if (!adminUIDs.includes(admin.uid)) return alert("У вас нет прав администратора!");
+
+  const targetUid = document.getElementById("targetUid").value.trim(); // UID кого пополнить
+  const amount = parseFloat(document.getElementById("amountInput").value); // сумма
+
+  if (!targetUid) return alert("Введите UID пользователя!");
+  if (isNaN(amount) || amount <= 0) return alert("Введите корректную сумму!");
+
+  // Получаем документ другого пользователя
+  const userRef = db.collection("users").doc(targetUid);
+  const docSnap = await userRef.get();
+
+  if (!docSnap.exists) {
+    alert("Пользователь с таким UID не найден!");
+    return;
+  }
+
+  const currentBalance = docSnap.data().balance || 0;
+  const newBalance = currentBalance + amount;
+
+  await userRef.update({ balance: newBalance });
+
+  alert(`✅ Пользователю (${targetUid}) выдано ${amount.toFixed(2)} ₽`);
+}
+
   </script>
 </body>
 </html>
